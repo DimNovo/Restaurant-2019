@@ -6,7 +6,7 @@
 //  Copyright © 2019 Dmitry Novosyolov. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 class MenuController
 {
@@ -27,6 +27,32 @@ class MenuController
             let categories = jsonDictionary?["categories"] as? [String]
             
             completion(categories)
+        }
+        task.resume()
+    }
+    
+    
+    func fetchImage(url: URL, completion: @escaping (UIImage?) -> Void)
+    {
+        guard var components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
+            completion(nil)
+            return
+        }
+        
+        let baseURLComponents = URLComponents(url: baseURL, resolvingAgainstBaseURL: true)!
+        components.host = baseURLComponents.host
+        guard let imageURL = components.url else {
+            completion(nil)
+            return
+        }
+        
+        let task = URLSession.shared.dataTask(with: imageURL)  { data, _, _ in
+            guard let data = data else {
+               completion(nil)
+                return
+            }
+            let image = UIImage(data: data)
+            completion(image)
         }
         task.resume()
     }
